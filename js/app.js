@@ -1,133 +1,130 @@
-/* -----------------------------------------------
-/* How to use? : Check the GitHub README
-/* ----------------------------------------------- */
+(function($, document, window){
 
-/* To load a config file (particles.json) you need to host this demo (MAMP/WAMP/local)... */
-/*
-particlesJS.load('particles-js', 'particles.json', function() {
-  console.log('particles.js loaded - callback');
-});
-*/
+	$(document).ready(function(){
 
-/* Otherwise just put the config content (json): */
+		$("[data-background]").each(function(){
+			var retina = window.devicePixelRatio > 1;
+			var bg = $(this).data("background");
+			if( retina ){
+				var retinabg = bg.replace(".jpg","@2x.jpg");
+				$(this).css("background-image","url("+retinabg+")");	
+			} else{
+				$(this).css("background-image","url("+bg+")");
+			}
+			
+		});
 
-particlesJS('particles-js',
-  
-  {
-    "particles": {
-      "number": {
-        "value": 80,
-        "density": {
-          "enable": true,
-          "value_area": 800
-        }
-      },
-      "color": {
-        "value": "#888"
-      },
-      "shape": {
-        "type": "circle",
-        "stroke": {
-          "width": 0,
-          "color": "#000000"
-        },
-        "polygon": {
-          "nb_sides": 5
-        },
-        "image": {
-          "src": "img/github.svg",
-          "width": 100,
-          "height": 100
-        }
-      },
-      "opacity": {
-        "value": 0.5,
-        "random": false,
-        "anim": {
-          "enable": false,
-          "speed": 1,
-          "opacity_min": 0.1,
-          "sync": false
-        }
-      },
-      "size": {
-        "value": 5,
-        "random": true,
-        "anim": {
-          "enable": false,
-          "speed": 40,
-          "size_min": 0.1,
-          "sync": false
-        }
-      },
-      "line_linked": {
-        "enable": true,
-        "distance": 150,
-        "color": "#777",
-        "opacity": 0.4,
-        "width": 1
-      },
-      "move": {
-        "enable": true,
-        "speed": 6,
-        "direction": "none",
-        "random": false,
-        "straight": false,
-        "out_mode": "out",
-        "attract": {
-          "enable": false,
-          "rotateX": 600,
-          "rotateY": 1200
-        }
-      }
-    },
-    "interactivity": {
-      "detect_on": "canvas",
-      "events": {
-        "onhover": {
-          "enable": true,
-          "mode": "repulse"
-        },
-        "onclick": {
-          "enable": true,
-          "mode": "push"
-        },
-        "resize": true
-      },
-      "modes": {
-        "grab": {
-          "distance": 400,
-          "line_linked": {
-            "opacity": 1
-          }
-        },
-        "bubble": {
-          "distance": 400,
-          "size": 40,
-          "duration": 2,
-          "opacity": 8,
-          "speed": 3
-        },
-        "repulse": {
-          "distance": 200
-        },
-        "push": {
-          "particles_nb": 4
-        },
-        "remove": {
-          "particles_nb": 2
-        }
-      }
-    },
-    "retina_detect": true,
-    "config_demo": {
-      "hide_card": false,
-      "background_color": "#b61924",
-      "background_image": "",
-      "background_position": "50% 50%",
-      "background_repeat": "no-repeat",
-      "background_size": "cover"
-    }
-  }
+		$("[data-bg-color]").each(function(){
+			var bg = $(this).data("bg-color");
+			$(this).css("background-color",bg);
+		});
 
-);
+		$(".slider").flexslider({
+			directionNav: false,
+			controlNav: true,
+		});
+
+		$(".quote-slider").flexslider({
+			directionNav: true,
+			controlNav: false,
+			prevText: "<i class='fa fa-caret-left'></i>",
+			nextText: "<i class='fa fa-caret-right'></i>",
+		});
+
+		var eventCarousel = $(".event-carousel");
+		eventCarousel.owlCarousel({
+ 
+			autoPlay: 3000, //Set AutoPlay to 3 seconds
+			rewindNav: false,
+			items : 4,
+			itemsDesktop : [1199,3],
+			itemsDesktopSmall : [979,3]
+
+		});
+		// Custom Navigation Events
+		$("#event-next").click(function(e){
+			e.preventDefault();
+			eventCarousel.trigger('owl.next');
+		});
+		$("#event-prev").click(function(e){
+			e.preventDefault();
+			eventCarousel.trigger('owl.prev');
+		});
+
+		var $container = $('.filterable-items');
+
+		$container.imagesLoaded(function(){
+		    $container.isotope({
+		        filter: '*',
+		        layoutMode: 'fitRows',
+		        animationOptions: {
+		            duration: 750,
+		            easing: 'linear',
+		            queue: false
+		        }
+		    });
+		});
+		$('.filterable-nav a').click(function(e){
+	    	e.preventDefault();
+	        $('.filterable-nav .current').removeClass('current');
+	        $(this).addClass('current');
+
+	        var selector = $(this).attr('data-filter');
+	        $container.isotope({
+	            filter: selector,
+	            animationOptions: {
+	                duration: 750,
+	                easing: 'linear',
+	                queue: false
+	            }
+	         });
+	         return false;
+	    });
+	    $('.mobile-filter').change(function(){
+
+	        var selector = $(this).val();
+	        $container.isotope({
+	            filter: selector,
+	            animationOptions: {
+	                duration: 750,
+	                easing: 'linear',
+	                queue: false
+	            }
+	         });
+	         return false;
+	    });
+
+	    initLightbox({
+	    	selector : '.filterable-item a',
+	    	overlay: true,
+	    	closeButton: true,
+	    	arrow: true
+	    });
+
+	    $(".mobile-menu").append($(".main-navigation .menu").clone());
+	    $(".toggle-menu").click(function(){
+	    	$(".mobile-menu").slideToggle();
+	    });
+
+	    if( $(".map").length ){
+			$('.map').gmap3({
+				map: {
+					options: {
+						maxZoom: 14,
+						scrollwheel: false
+					}  
+				},
+				marker:{
+					address: "40 Sibley St, Detroit",
+				}
+			},
+			"autofit" );
+	    }
+
+	});
+
+	$(window).ready(function(){
+
+	});
+
+})(jQuery, document, window);
